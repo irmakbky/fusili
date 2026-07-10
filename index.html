@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>FuSiLi: Dual-Objective Contrastive Learning</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+<header class="header">
+  <h1>Local Multimodal Music Alignment from Global Supervision</h1>
+  <!-- <h2>FuSiLi: Fused Sinkhorn-Localized Similarity</h2> -->
+
+  <p class="authors">
+    Anonymous Authors<br>
+    [ISMIR 2026 submission]
+  </p>
+
+  <div class="links">
+    <!-- <a href="#">[Paper]</a> -->
+    <a href="#">[Code]</a>
+    <!-- <a href="#">[Data]</a> -->
+  </div>
+</header>
+
+<section class="section">
+  <h2>Abstract</h2>
+  <p class="tldr">
+    Introducing FuSiLi: Fused Sinkhorn-Localized Similarity
+  </p>
+
+  <p>
+    <!-- paste full abstract here -->
+    Understanding music requires understanding localized relationships across data modalities, e.g., how time in performance audio maps onto position in a score image. Yet supervision for such local correspondences is difficult to obtain—in practice, we often only have access to coarser global supervision like paired segments of audio and images. To address this gap, we propose FuSiLi (Fused Sinkhorn-Localized Similarity), a similarity score for multimodal contrastive learning operating directly on local image patch and audio frame features via Sinkhorn-based soft alignment. We show that FuSiLi (i) effectively learns local relationships, (ii) requires only global supervision, and (iii) retains the global alignment capabilities of conventional contrastive approaches. We fine-tune pretrained CLIP and CLAP encoders on pairs of raw sheet music images and audio using a hybrid contrastive objective combining FuSiLi with conventional global similarity. We evaluate on cross-modal retrieval and frame-level alignment tasks against a range of global and local baselines, showing that our approach outperforms them on local alignment while remaining competitive on retrieval.
+  </p>
+</section>
+
+<section class="section">
+  <h2>Method Overview</h2>
+
+  <img src="assets/fusili_final.png" class="figure">
+
+  <p class="caption">
+    Pipeline of standard contrastive learning vs. <strong>FuSiLi</strong>.
+    Standard approaches compute batch-wise similarity using pre-pooled representations,
+    removing any capacity for explicit cross-modal locality. In contrast, our <em>fuse-then-pool</em> FuSiLi computes frame-wise similarity matrices
+    (frame similarity S<sub>ij</sub>) for each batch pairing. We then apply Sinkhorn iteration
+    to enforce soft one-to-one correspondences at the frame level. Only <em>after</em> this alignment step do we pool representations into global embeddings,
+    which now encode localized cross-modal structure in addition to global semantics.
+  </p>
+</section>
+
+<section class="section">
+  <h2>Qualitative Results</h2>
+
+  <p>
+    We evaluate our best-performing configuration (FuSiLi, Same Piece + Pos. Mutations) qualitatively on <b>frame-level cross-modal alignment between score images and audio performances</b>.
+    We visualize retrieved image patches for each audio frame to assess local correspondence quality under both in-domain and out-of-domain settings, and compare it against a standard global contrastive baseline trained with the same configuration (Baseline, Same Piece + Pos. Mutations) to highlight localized alignments learned by FuSiLi. 
+    We also include the alignment matrices produced for each example.
+  </p>
+
+
+  <h3>In-Domain Alignment (Top-1 Image Patch Retrieval)</h3>
+  <p>
+    On the MSMD dataset <a href="#ref1" class="cite">[1]</a>, we visualize top-1 image patch retrieval for each audio frame.
+  </p>
+
+
+  <!-- <p>The videos below visualize <b>frame-level cross-modal alignment between score images and audio performances</b> by retrieving the most similar image patch for each audio frame (i.e., top-1 patch retrieval) on pieces from the MSMD dataset  <a href="#ref1" class="cite">[1]</a>.
+    This is achieved by computing a similarity matrix between audio frame and image patch embeddings, and taking an argmax over the patch dimension for each audio frame.
+  </p><p>We compare our best-performing configuration (FuSiLi, Same Piece + Pos. Mutations) against a standard global contrastive baseline trained with the same configuration (Baseline, Same Piece + Pos. Mutations) to highlight localized alignments learned by FuSiLi. </p> -->
+
+  <div class="video-pair-grid">
+
+    <h3 class="example-title">Example 1</h3>
+    <div class="video-row">
+  
+
+    
+      <div class="video-card">
+        <video controls>
+          <source src="assets/msmd_1411.mp4" type="video/mp4">
+        </video>
+        <img src="assets/msmd_1411.png" class="align-matrix">
+        <div class="label">FuSiLi</div>
+      </div>
+  
+      <div class="video-card">
+        <video controls>
+          <source src="assets/msmd_1411_baseline.mp4" type="video/mp4">
+        </video>
+        <img src="assets/msmd_1411_baseline.png" class="align-matrix">
+        <div class="label">Global Baseline</div>
+      </div>
+
+      <div class="video-card">
+        <video controls>
+          <source src="assets/msmd_1411_gt.mp4" type="video/mp4">
+        </video>
+        <img src="assets/msmd_1411_gt.png" class="align-matrix">
+        <div class="label">Ground Truth</div>
+      </div>
+  
+    </div>
+  
+  
+    <!-- Example 2 -->
+    <h3 class="example-title">Example 2</h3>
+    <div class="video-row">
+  
+      <div class="video-card">
+        <video controls>
+          <source src="assets/msmd_1431.mp4" type="video/mp4">
+        </video>
+        <img src="assets/msmd_1431.png" class="align-matrix">
+        <div class="label">FuSiLi</div>
+      </div>
+  
+      <div class="video-card">
+        <video controls>
+          <source src="assets/msmd_1431_baseline.mp4" type="video/mp4">
+        </video>
+        <img src="assets/msmd_1431_baseline.png" class="align-matrix">
+        <div class="label">Global Baseline</div>
+      </div>
+
+      <div class="video-card">
+        <video controls>
+          <source src="assets/msmd_1431_gt.mp4" type="video/mp4">
+        </video>
+        <img src="assets/msmd_1431_gt.png" class="align-matrix">
+        <div class="label">Ground Truth</div>
+      </div>
+  
+    </div>
+  
+  
+    <!-- Example 3 -->
+    <h3 class="example-title">Example 3</h3>
+    <div class="video-row">
+  
+      <div class="video-card">
+        <video controls>
+          <source src="assets/msmd_2341.mp4" type="video/mp4">
+        </video>
+        <img src="assets/msmd_2341.png" class="align-matrix">
+        <div class="label">FuSiLi</div>
+      </div>
+  
+      <div class="video-card">
+        <video controls>
+          <source src="assets/msmd_2341_baseline.mp4" type="video/mp4">
+        </video>
+        <img src="assets/msmd_2341_baseline.png" class="align-matrix">
+        <div class="label">Global Baseline</div>
+      </div>
+  
+      <div class="video-card">
+        <video controls>
+          <source src="assets/msmd_2341_gt.mp4" type="video/mp4">
+        </video>
+        <img src="assets/msmd_2341_gt.png" class="align-matrix">
+        <div class="label">Ground Truth</div>
+      </div>
+    </div>
+  
+  </div>
+
+  <h3>Out-of-Domain Alignment (Top-3 Image Patch Retrieval)</h3>
+  <p>
+    We further evaluate robustness under domain shift using the YTSV dataset <a href="#ref2" class="cite">[2]</a>.
+    In this setting, we visualize the top-3 most similar image patches per audio frame, reflecting increased ambiguity in cross-domain alignment.
+  </p>
+
+  <h3 class="example-title">Example 1</h3>
+  <div class="video-row two-videos">
+    <div class="video-card">
+      <video controls>
+        <source src="assets/ytsv_8.mp4" type="video/mp4">
+      </video>
+      <img src="assets/ytsv_8.png" class="align-matrix">
+      <div class="label">FuSiLi</div>
+    </div>
+  
+    <div class="video-card">
+      <video controls>
+        <source src="assets/ytsv_8_baseline.mp4" type="video/mp4">
+      </video>
+      <img src="assets/ytsv_8_baseline.png" class="align-matrix">
+      <div class="label">Global Baseline</div>
+    </div>
+  </div>
+
+  <h3 class="example-title">Example 2</h3>
+  <div class="video-row two-videos">
+    <div class="video-card">
+      <video controls>
+        <source src="assets/ytsv_516.mp4" type="video/mp4">
+      </video>
+      <img src="assets/ytsv_516.png" class="align-matrix">
+      <div class="label">FuSiLi</div>
+    </div>
+  
+    <div class="video-card">
+      <video controls>
+        <source src="assets/ytsv_516_baseline.mp4" type="video/mp4">
+      </video>
+      <img src="assets/ytsv_516_baseline.png" class="align-matrix">
+      <div class="label">Global Baseline</div>
+    </div>
+  </div>
+
+  <!-- <h3>Alignment Matrix Comparison</h3>
+  Placeholder
+
+  <img src="assets/fig2.png" class="figure">
+
+  <p class="caption">
+    Figure 2: Ground truth vs FuSiLi vs baseline alignment matrices.
+
+  </p> -->
+</section>
+
+<!-- <section class="section"> -->
+  <!-- <h2>Quantitative Summary</h2> -->
+  <section class="section">
+    <h2>Quantitative Summary</h2>
+
+        <div class="table-wrapper">
+          <table class="results-table">
+      
+            <!-- Header row -->
+            <tr>
+              <th></th>
+      
+              <th colspan="2">Local Eval</th>
+              <th colspan="2">Point & Retrieve</th>
+      
+              <th colspan="4">Global (PDMX<a href="#ref3" class="cite">[3]</a>)</th>
+              <th colspan="4">Global (YTSV<a href="#ref2" class="cite">[2]</a>)</th>
+              <th colspan="4">Global (MSMD<a href="#ref1" class="cite">[1]</a>)</th>
+            </tr>
+      
+            <tr>
+              <th>Method</th>
+      
+              <th>Top-1</th><th>PPL</th>
+      
+              <th>I2A</th><th>A2I</th>
+      
+              <th>I2A R@1</th><th>I2A MRR</th>
+              <th>A2I R@1</th><th>A2I MRR</th>
+      
+              <th>I2A R@1</th><th>I2A MRR</th>
+              <th>A2I R@1</th><th>A2I MRR</th>
+      
+              <th>I2A R@1</th><th>I2A MRR</th>
+              <th>A2I R@1</th><th>A2I MRR</th>
+            </tr>
+      
+            <!-- Baseline -->
+            <tr>
+              <td>Baseline</td>
+      
+              <td><b>0.24</b></td><td>36.55</td>
+      
+              <td>0.01</td><td>0.05</td>
+      
+              <td>0.73</td><td>0.83</td>
+              <td>0.73</td><td>0.83</td>
+      
+              <td>0.07</td><td>0.12</td>
+              <td>0.03</td><td>0.07</td>
+      
+              <td>0.27</td><td>0.38</td>
+              <td>0.28</td><td>0.41</td>
+            </tr>
+      
+            <!-- FuSiLi -->
+            <tr>
+              <td>FuSiLi</td>
+      
+              <td><b>0.30</b></td><td>34.24</td>
+      
+              <td>0.14</td><td>0.14</td>
+      
+              <td>0.72</td><td>0.83</td>
+              <td>0.73</td><td>0.83</td>
+      
+              <td>0.05</td><td>0.10</td>
+              <td>0.04</td><td>0.08</td>
+      
+              <td>0.25</td><td>0.38</td>
+              <td>0.25</td><td>0.39</td>
+            </tr>
+      
+          </table>
+        </div>
+        <p class="table-note">
+            <b>Bolded values correspond to the task visualized in the videos above.</b>
+          </p>
+      </section>
+<!-- </section> -->
+
+<section class="section">
+    <p id="ref1" class="reference">
+        [1] Matthias Dorfer, Jan Hajič jr., Andreas Arzt, Harald Frostel, Gerhard Widmer. Learning Audio-Sheet Music Correspondences for Cross-Modal Retrieval and Piece Identification. <i>Transactions of the International Society for Music Information Retrieval</i>, issue 1, 2018.
+    </p>
+    <p id="ref2" class="reference">
+      [3] Jongmin Jung, Dongmin Kim, Sihun Lee, Seola Cho, Hyungjoon So, Irmak Bukey, Chris Donahue, Dasaem Jeong.<br>
+      U-MusT: A Unified Framework for Cross-modal Translation of Score Images, Symbolic Music, and Performance Audio.<br>
+      <i>IEEE Transactions on Audio, Speech and Language Processing</i>, 2025. IEEE.
+    </p>
+    <p id="ref3" class="reference">
+      [2] Phillip Long, Zachary Novack, Taylor Berg-Kirkpatrick, Julian McAuley.
+      PDMX: A Large-Scale Public Domain MusicXML Dataset for Symbolic Music Processing.
+      <i>ICASSP 2025 IEEE International Conference on Acoustics, Speech, and Signal Processing (ICASSP)</i>, 2025. IEEE.
+      </p>
+</section>
+
+<footer class="footer">
+  <p>Project page for research demo.</p>
+</footer>
+
+</body>
+</html>
