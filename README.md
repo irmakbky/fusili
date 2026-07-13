@@ -71,4 +71,6 @@ FuSiLi requires access to both global embeddings and local representations (e.g.
 
 ## Project Page
 
-The `docs/` directory contains the project webpage with qualitative alignment visualizations.
+The project webpage contains qualitative alignment visualizations and additional details:
+
+https://irmakbky.github.io/fusili/
