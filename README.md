@@ -1,6 +1,6 @@
 # FuSiLi: Fused Sinkhorn-Localized Similarity
 
-**Official implementation of "Local Multimodal Music Alignment from Global Supervision" (accepted to ISMIR 2026).**
+**Official implementation of ["Local Multimodal Music Alignment from Global Supervision"](https://arxiv.org/abs/2607.10023) (accepted to ISMIR 2026).**
 
 <p align="center">
   <img src="docs/assets/fusili_final.png" width="900" alt="FuSiLi overview">
@@ -74,3 +74,18 @@ FuSiLi requires access to both global embeddings and local representations (e.g.
 The project webpage contains qualitative alignment visualizations and additional details:
 
 https://irmakbky.github.io/fusili/
+
+## Citation
+
+If you use FuSiLi in your research, please cite:
+
+```bibtex
+@misc{bukey2026localmultimodalmusicalignment,
+      title={Local Multimodal Music Alignment from Global Supervision}, 
+      author={Irmak Bukey and Zachary Novack and Jongmin Jung and Dasaem Jeong and Chris Donahue},
+      year={2026},
+      eprint={2607.10023},
+      archivePrefix={arXiv},
+      primaryClass={cs.SD},
+      url={https://arxiv.org/abs/2607.10023}, 
+}
